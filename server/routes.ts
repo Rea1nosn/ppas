@@ -1,8 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-// заменил @shared/schema на относительный путь
-import { insertProductSchema, loginSchema } from "../shared/schema";
+import { insertProductSchema, loginSchema } from "../shared/schema"; // фикс
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -28,7 +27,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         success: true
       });
-    } catch (error: any) {
+    } catch (error: any) {  // <-- фиксанул
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: error.errors });
       }
