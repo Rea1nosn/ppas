@@ -1,7 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertProductSchema, loginSchema } from "@shared/schema";
+// заменил @shared/schema на относительный путь
+import { insertProductSchema, loginSchema } from "../shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -15,13 +16,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: "Invalid credentials" });
       }
       
-      // Check if user is admin
       if (user.role !== "admin") {
         return res.status(403).json({ error: "Access denied" });
       }
       
-      // In a real app, you'd use JWT tokens or sessions
-      // For simplicity, we're just returning user info
       res.json({
         user: {
           id: user.id,
@@ -30,7 +28,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         success: true
       });
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: error.errors });
       }
@@ -39,11 +37,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all products
-  app.get("/api/products", async (req, res) => {
+  app.get("/api/products", async (_req, res) => {
     try {
       const products = await storage.getProducts();
       res.json(products);
-    } catch (error) {
+    } catch (error: any) {
       res.status(500).json({ message: "Failed to fetch products" });
     }
   });
@@ -56,7 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Product not found" });
       }
       res.json(product);
-    } catch (error) {
+    } catch (error: any) {
       res.status(500).json({ message: "Failed to fetch product" });
     }
   });
@@ -67,7 +65,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertProductSchema.parse(req.body);
       const product = await storage.createProduct(validatedData);
       res.status(201).json(product);
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: error.errors });
       }
@@ -86,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json(product);
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: error.errors });
       }
@@ -104,7 +102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json({ success: true, message: "Product deleted" });
-    } catch (error) {
+    } catch (error: any) {
       res.status(500).json({ error: "Failed to delete product" });
     }
   });
