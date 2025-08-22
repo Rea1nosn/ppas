@@ -12,12 +12,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
   const originalResJson = res.json.bind(res);
-  res.json = function (
-    bodyJson: any,
-    ...args: Parameters<Response["json"]>
-  ): Response {
+  res.json = function (bodyJson: any): Response {
     capturedJsonResponse = bodyJson;
-    return originalResJson(bodyJson, ...args);
+    return originalResJson(bodyJson);
   };
 
   res.on("finish", () => {
