@@ -12,7 +12,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
   const originalResJson = res.json.bind(res);
-  res.json = function (bodyJson: any, ...args: any[]): Response {
+  res.json = function (
+    bodyJson: any,
+    ...args: Parameters<Response["json"]>
+  ): Response {
     capturedJsonResponse = bodyJson;
     return originalResJson(bodyJson, ...args);
   };
@@ -40,14 +43,13 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status: number = err.status || err.statusCode || 500;
-    const message: string = err.message || "Internal Server Error";
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
 
     res.status(status).json({ message });
     throw err;
   });
 
-  // Vite только в деве
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
