@@ -6,11 +6,15 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".", 
+    "baseUrl": ".",
     "paths": {
       "@shared/*": ["../shared/*"]
     }
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "../vite.config.ts",
+    "./vite.ts"
+  ]
 }
